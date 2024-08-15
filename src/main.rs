@@ -122,7 +122,63 @@ impl Board {
 }
 
 fn main() {
-    loop {}
+    let mut player_board = Board::new();
+    let mut opp_board = Board::new();
+
+    player_board.place_ship(5); // Aircraft Carrier
+    player_board.place_ship(4); // Battleship
+    player_board.place_ship(3); // Cruiser
+    player_board.place_ship(3); // Submarine
+    player_board.place_ship(2); // Destroyer
+
+    opp_board.place_ship(5);
+    opp_board.place_ship(4);
+    opp_board.place_ship(3);
+    opp_board.place_ship(3);
+    opp_board.place_ship(2);
+
+    loop {
+        print!("\x1b[2J\x1b[1;1H");
+
+        println!("\x1b[1;37mYour Board:\x1b[0m");
+        player_board.display(false);
+        println!("\x1b[1;37mOpponent's Board:\x1b[0m");
+        opp_board.display(true);
+
+        let (player_row, player_col) = get_player_input();
+        let result = opp_board.fire(player_row, player_col);
+        match result {
+            CellState::Miss => println!("\x1b[36mYou missed!\x1b[0m"),
+            CellState::Hit => println!("\x1b[31mYou hit a ship!\x1b[0m"),
+            _ => (),
+        }
+        println!("Press Enter to continue...");
+        io::stdin()
+            .read_line(&mut String::new())
+            .expect("Failed to read line");
+
+        if opp_board.is_game_over() {
+            println!("\x1b[1;32mCongratulations! You sank all of your opponent's ships!\x1b[0m");
+            break;
+        }
+
+        let (opponent_row, opponent_col) = generate_opp_move();
+        let result = player_board.fire(opponent_row, opponent_col);
+        match result {
+            CellState::Miss => println!("\x1b[36mOpponent missed!\x1b[0m"),
+            CellState::Hit => println!("\x1b[31mOpponent hit one of your ships!\x1b[0m"),
+            _ => (),
+        }
+        println!("Press Enter to continue...");
+        io::stdin()
+            .read_line(&mut String::new())
+            .expect("Failed to read line");
+
+        if player_board.is_game_over() {
+            println!("\x1b[1;31mOh no! All of your ships have been sunk!\x1b[0m");
+            break;
+        }
+    }
 }
 
 fn get_player_input() -> (usize, usize) {
