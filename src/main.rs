@@ -125,6 +125,23 @@ fn main() {
     loop {}
 }
 
-fn get_player_input() {}
+fn get_player_input() -> (usize, usize) {
+    loop {
+        print!("\x1b[1;37mEnter coordinates to fire (row, col): \x1b[0m");
+        io::stdout().flush().unwrap();
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("Failed to read line");
+        let coordinates: Vec<usize> = input
+            .trim()
+            .split(',')
+            .map(|s| s.trim().parse().expect("Invalid input"))
+            .collect();
+        if coordinates.len() == 2 && coordinates[0] < BOARD_SIZE && coordinates[1] < BOARD_SIZE {
+            return (coordinates[0], coordinates[1]);
+        } else {
+            println!("\x1b[1;31mInvalid input. Please enter row and column numbers separated by a comma.\x1b[0m");
+        }
+    }
+}
 
 fn generate_opp_move() {}
