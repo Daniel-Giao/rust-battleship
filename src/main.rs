@@ -1,8 +1,5 @@
 use rand::Rng;
-use std::{
-    intrinsics::simd::simd_reduce_all,
-    io::{self, Write},
-};
+use std::io::{self, Write};
 
 const BOARD_SIZE: usize = 10;
 
@@ -11,7 +8,6 @@ struct Board {
     ships: Vec<(usize, usize)>,
 }
 #[derive(Clone, Copy, PartialEq)]
-
 enum CellState {
     Empty,
     Ship,
@@ -42,7 +38,7 @@ impl Board {
                         (row + i, col)
                     };
                     self.grid[r][c] = CellState::Ship;
-                    self.ships.push((r,c))
+                    self.ships.push((r, c))
                 }
                 break;
             }
@@ -70,6 +66,58 @@ impl Board {
             }
         }
         true
+    }
+
+    fn fire(&mut self, row: usize, col: usize) -> CellState {
+        match self.grid[row][col] {
+            CellState::Empty => {
+                self.grid[row][col] = CellState::Miss;
+                CellState::Miss
+            }
+            CellState::Ship => {
+                self.grid[row][col] = CellState::Hit;
+                CellState::Hit
+            }
+            _ => CellState::Miss,
+        }
+    }
+
+    fn display(&self, hide_ships: bool) {
+        print!("   ");
+        for i in 0..BOARD_SIZE {
+            print!(" {} ", i);
+        }
+        println!();
+        for (i, row) in self.grid.iter().enumerate() {
+            print!("{:2} ", i);
+            for cell in row {
+                match cell {
+                    CellState::Empty => {
+                        if hide_ships {
+                            print!("   ");
+                        } else {
+                            print!(" \u{25A1} "); // □ Water
+                        }
+                    }
+                    CellState::Ship => {
+                        if hide_ships {
+                            print!("   ");
+                        } else {
+                            print!(" \u{25A0} ");
+                        } // ■ Ship pieces
+                    }
+                    CellState::Hit => print!("\x1b[31m \u{25CF} \x1b[0m"), // ● Hit (red)
+                    CellState::Miss => print!("\x1b[36m \u{00B7} \x1b[0m"), // · Miss (blue)
+                }
+            }
+            println!();
+        }
+    }
+
+    fn is_game_over(&self) -> bool {
+        self.ships
+            .iter()
+            .all(|&(r, c)| self.grid[r][c] == CellState::Hit)
     }
 }
 
