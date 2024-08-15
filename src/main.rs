@@ -130,7 +130,9 @@ fn get_player_input() -> (usize, usize) {
         print!("\x1b[1;37mEnter coordinates to fire (row, col): \x1b[0m");
         io::stdout().flush().unwrap();
         let mut input = String::new();
-        io::stdin().read_line(&mut input).expect("Failed to read line");
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
         let coordinates: Vec<usize> = input
             .trim()
             .split(',')
@@ -144,4 +146,7 @@ fn get_player_input() -> (usize, usize) {
     }
 }
 
-fn generate_opp_move() {}
+fn generate_opp_move() -> (usize, usize) {
+    let mut rng = rand::thread_rng();
+    (rng.gen_range(0..BOARD_SIZE), rng.gen_range(0..BOARD_SIZE))
+}
