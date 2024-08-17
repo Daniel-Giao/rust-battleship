@@ -5,7 +5,7 @@ A mini and portable CLI Battleship game built with Rust, bringing one of my chil
 Enjoy a fun and nostalgic experience right from your terminal!
 
 ## App Preview
-![preview](.img/preview.png)
+<img src=".img/preview.png" alt="drawing" width="450"/>
 
 ## Prerequisites
 - Rust: Make sure Rust is installed. You can install it from [rust-lang.org](https://www.rust-lang.org/).
